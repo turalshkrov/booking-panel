@@ -10,7 +10,7 @@ const tabs = [
   { name: "comfirmation", header: "Confirm details" },
 ];
 
-export const staff = [
+const staff = [
   {
     "id": 1,
     "name": "Alex Rosetta",
@@ -25,7 +25,7 @@ export const staff = [
   }
 ];
 
-export const services = [
+const services = [
   {
     "id": 1,
     "name": "Oral hygiene",
@@ -49,7 +49,7 @@ export const services = [
   }
 ];
 
-export const times = [
+const times = [
   {
     "start_time": "09:00",
     "end_time": "09:30"
@@ -60,11 +60,35 @@ export const times = [
   }
 ];
 
+const formElements = [
+  {
+    name: 'first-name',
+    label: 'First name',
+    type: 'text',
+  },
+  {
+    name: 'last-name',
+    label: 'Last name',
+    type: 'text',
+  },
+  {
+    name: 'email',
+    label: 'Email',
+    type: 'email',
+  },
+  {
+    name: 'phone',
+    label: 'Phone',
+    type: 'text',
+  }
+]
+
 let currentTabIndex = 0;
 let selectedStaff = null;
 let selectedService = null;
 let selectedDate = null;
 let selectedTime = null;
+let customer = null;
 let month = null;
 let year = null;
 
@@ -129,7 +153,7 @@ const footerRender = () => {
     warningMessage.style.visibility = 'hidden';
   });
   nextButton.addEventListener('click', () => {
-    if (currentTabIndex < 3) {
+    if (currentTabIndex <= 3) {
       if (currentTabIndex === 0) {
         if (selectedStaff) { currentTabIndex += 1; uiRender(); }
         else showWarningMessage('select staff');
@@ -138,9 +162,58 @@ const footerRender = () => {
         if (selectedService) { currentTabIndex += 1; uiRender(); }
         else showWarningMessage('select service');
       }
+      else if (currentTabIndex === 2) {
+        if (selectedTime) { currentTabIndex += 1; uiRender(); }
+        else showWarningMessage('select Date & Time');
+      }
+      else if (currentTabIndex === 3) {
+        if (customer) {
+          const booking = {
+            staff_id: selectedStaff,
+            service_id: selectedService,
+            date: selectedDate,
+            time: selectedTime,
+            customer: customer
+          }
+          console.log(booking);
+          currentTabIndex = 0;
+          selectedStaff = null;
+          selectedService = null;
+          selectedDate = null;
+          selectedTime = null;
+          customer = null;
+          month = null;
+          year = null;
+          uiRender();
+          showModal('Confirmation successfully completed!');
+        }
+        else {
+          showWarningMessage('Fill All Inputs');
+        }
+      }
     }
-  });
-  contentFooter.append(backButton, warningMessage, nextButton);
+  }
+);
+contentFooter.append(backButton, warningMessage, nextButton);
+}
+
+const showModal = (message) => {
+  const modal = document.createElement('div');
+  const modalContent = document.createElement('div');
+  const modalHeader = document.createElement('div');
+  const modalText = document.createElement('div');
+  modal.className = 'modal';
+  modalContent.className = 'modal-content';
+  modalHeader.className = 'modal-header';
+  modalText.className = 'modal-text';
+  modalHeader.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+  modalHeader.firstElementChild.addEventListener('click', () => {
+    modal.remove();
+  })
+  modalText.innerText = message;
+  modalContent.append(modalHeader, modalText);
+  modal.append(modalContent);
+  document.body.append(modal);
 }
 
 const selectedStaffUpdate = () => {
@@ -152,10 +225,8 @@ const selectedStaffUpdate = () => {
 }
 
 const staffContentRender = () => {
-  if (currentTabIndex === 0) {
-    contentBody.innerHTML = "";
-    contentBody.classList.remove('datetime-content');
-  }
+  contentBody.innerHTML = "";
+  contentBody.className = 'content-body';
   staff.forEach((item, index) => {
     const staffCard = document.createElement('div');
     const cardRightDiv = document.createElement('div');
@@ -182,7 +253,7 @@ const staffContentRender = () => {
       currentTabIndex += 1;
       uiRender()
     });
-    if (currentTabIndex === 0) contentBody.appendChild(staffCard);
+    contentBody.appendChild(staffCard);
   });
 }
 
@@ -195,10 +266,8 @@ const selectedServiceUpdate = () => {
 }
 
 const servicesRender = () => {
-  if (currentTabIndex === 1) {
-    contentBody.innerHTML = "";
-    contentBody.classList.remove('datetime-content');
-  }
+  contentBody.innerHTML = "";
+  contentBody.className = 'content-body';
   services.forEach((item, index) => {
     const serviceCard = document.createElement('div');
     const cardRightDiv = document.createElement('div');
@@ -228,7 +297,7 @@ const servicesRender = () => {
       currentTabIndex += 1;
       uiRender();
     });
-    if (currentTabIndex === 1) contentBody.appendChild(serviceCard);
+    contentBody.appendChild(serviceCard);
   })
 }
 
@@ -332,26 +401,67 @@ const dateTimeRender = () => {
   times.forEach(time => {
     const timeCard = document.createElement('div');
     timeCard.classList.add('time-card');
+    if (`${time.start_time} - ${time.end_time}` === selectedTime) timeCard.classList.add('time-card-active');
     timeCard.innerHTML = `<span>${time.start_time}</span><span>${time.end_time}</span>`;
+    timeCard.addEventListener('click', () => {
+      selectedTime = `${time.start_time} - ${time.end_time}`;
+      currentTabIndex += 1;
+      uiRender();
+    });
     if (selectedDate) timeBody.append(timeCard);
   });
   timeSelector.append(timeLabel, timeBody);
-  if (currentTabIndex === 2) {
-    dateDiv.append(dateHeader, dateSelector);
-    timeDiv.append(timeHeader, timeSelector);
-    contentBody.append(dateDiv, timeDiv);
-  }
+  dateDiv.append(dateHeader, dateSelector);
+  timeDiv.append(timeHeader, timeSelector);
+  contentBody.append(dateDiv, timeDiv);
+}
+
+const formContentRender = () => {
+  contentBody.innerHTML = "";
+  contentBody.className = 'content-body';
+  const form = document.createElement('form');
+  const note = document.createElement('h4');
+  const noteContent = document.createElement('div');
+  const noteStaff = document.createElement('p');
+  const noteService = document.createElement('p');
+  const noteDate = document.createElement('p');
+  const noteprice = document.createElement('p');
+  noteStaff.innerText = 'staff: ' + (selectedStaff && staff.find(staff => staff.id === selectedStaff).name);
+  noteService.innerText = 'service: ' + (selectedService && services.find(service => service.id === selectedService).name);
+  noteDate.innerText = 'date: ' + `${selectedDate}/${selectedTime}`;
+  noteprice.innerText = 'price: ' + (selectedService && services.find(service => service.id === selectedService).price + '$');
+  noteContent.className = 'note-content';
+  note.innerText = 'Note';
+  noteContent.append(noteStaff, noteService, noteDate, noteprice);
+  formElements.forEach(element => {
+    const inputGroup = document.createElement('div');
+    const input = document.createElement('input');
+    const label = document.createElement('label');
+    inputGroup.className = 'input-group';
+    input.id = element.name;
+    input.type = element.type;
+    label.innerText = element.label;
+    label.htmlFor = element.name;
+    input.addEventListener('change', () => {
+      customer = {
+        ...customer,
+        [element.name]: input.value,
+      }
+    })
+    inputGroup.append(label, input);
+    form.appendChild(inputGroup);
+  });
+  contentBody.append(form, note, noteContent);
 }
 
 const uiRender = () => {
   sidebarMenuRender();
   sidebarMenuUpdate();
   contentHeaderUpdate();
-  staffContentRender();
-  selectedStaffUpdate();
-  servicesRender();
-  selectedServiceUpdate();
-  dateTimeRender();
+  if(currentTabIndex === 0) { staffContentRender(); selectedStaffUpdate(); }
+  if (currentTabIndex === 1) { servicesRender(); selectedServiceUpdate(); }
+  if (currentTabIndex === 2) { dateTimeRender(); }
+  if (currentTabIndex === 3) { formContentRender(); }
   footerRender();
 }
 

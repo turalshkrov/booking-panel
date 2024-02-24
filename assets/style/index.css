@@ -306,9 +306,10 @@ body {
   padding: 12px 15px;
 }
 
-.selected-day {
-  background-color: #6c70dc;
-  color: white;
+.selected-day,
+.time-card-active {
+  background-color: #6c70dc !important;
+  color: white !important;
 }
 
 .time-card {
@@ -320,4 +321,85 @@ body {
   font-size: 14px;
   color: #111111;
   cursor: pointer;
+}
+form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 20px;
+  row-gap: 25px;
+  margin-bottom: 25px;
+}
+.input-group {
+  display: flex;
+  flex-direction: column;
+  row-gap: 9px;
+}
+
+.input-group input {
+  border-radius: 3px;
+  border: 1px solid #e3eaf3;
+  outline: none;
+  padding: 10px;
+  height: 46px;
+}
+
+.input-group label {
+  font-size: 15px;
+  color: #292d32;
+  font-weight: 400;
+}
+
+.note-content {
+  background-color: white;
+  border-radius: 5px;
+  padding: 19px 0 13px 26px;
+  margin-top: 9px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+}
+
+.note-content p {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  column-gap: 12px;
+}
+
+.modal {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.modal-content {
+  position: relative;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 200px;
+  border-radius: 5px;
+  background-color: #FFF;
+}
+
+.modal-header {
+  padding: 2rem;
+  width: 100%;
+  display: flex;
+  flex-direction: row-reverse;
+}
+.modal-header i {
+  cursor: pointer;
+}
+
+.modal-text {
+  text-align: center;
+  color: #4fbf65;
 }
