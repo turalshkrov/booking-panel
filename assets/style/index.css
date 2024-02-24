@@ -33,6 +33,10 @@ body {
 .content {
   height: 560px;
   width: 750px;
+  background-color: #f5f7fa;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .sidebar-menu {
@@ -44,6 +48,7 @@ body {
 
 .content-header {
   padding: 19px 25px 14px 30px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.177);
 }
 
 .content-body {
@@ -51,6 +56,17 @@ body {
   flex-direction: column;
   row-gap: 10px;
   padding: 25px 30px;
+}
+
+.content-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 30px;
+  background-color: white;
+  border-top: 1px solid rgba(128, 128, 128, 0.177);
+  height: 76px;
+  margin-top: auto;
 }
 
 .sidebar-menu-item {
@@ -62,6 +78,7 @@ body {
   display: flex;
   align-items: center;
   column-gap: 12px;
+  text-transform: capitalize;
 }
 
 .sidebar-menu-item-active {
@@ -88,6 +105,7 @@ body {
 .sidebar-menu-item-done {
   color: #ffffff;
 }
+
 .sidebar-menu-item-done i {
   width: 25px;
   height: 25px;
@@ -99,4 +117,207 @@ body {
   align-items: center;
   justify-content: center;
   color: #FFF;
+}
+
+.card {
+  display: flex;
+  background-color: white;
+  border-radius: 2px;
+  padding: 15px 20px;
+  align-items: center;
+  border: 2px solid white;
+  cursor: pointer;
+  justify-content: space-between;
+}
+
+.card-active {
+  border: 2px solid #53d56c;
+}
+
+.card-right {
+  display: flex;
+  align-items: center;
+  column-gap: 22px;
+}
+
+.card-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.card-title {
+  color: #292d32;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.card-description {
+  font-size: 12px;
+  color: #828f9a;
+}
+
+.price {
+  color: #4fbf65;
+  font-weight: 500;
+  font-size: 26px;
+}
+
+.btn {
+  border-radius: 2px;
+  padding: 9px 14px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.back-btn {
+  background-color: #e3eaf3;
+  color: #8f9ca7;
+  border: 1px solid rgba(143, 156, 167, 0.2156862745);
+  margin-right: auto;
+  text-transform: uppercase;
+}
+
+.next-btn {
+  background-color: #6c70dc;
+  color: #ffffff;
+  border: 1px solid #6c70dc;
+  margin-left: auto;
+  text-transform: uppercase;
+}
+
+.warning-message {
+  display: flex;
+  align-items: center;
+  user-select: none;
+  font-weight: bold;
+  column-gap: 10px;
+  background-color: #f4be6c;
+  color: #ffffff;
+  font-size: 12px;
+  text-transform: uppercase;
+  border-radius: 2px;
+  padding: 12px 14px;
+}
+
+.datetime-content {
+  display: grid;
+  grid-template-columns: 370px 305px;
+  align-items: center;
+  column-gap: 15px;
+  padding: 32px 30px;
+}
+
+.date-header {
+  text-align: center;
+  display: flex;
+  align-items: baseline;
+  column-gap: 21px;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 19px;
+}
+
+.date-btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.date-selector,
+.time-selector {
+  background-color: white;
+  border-radius: 2px;
+  height: 300px;
+}
+
+.time-header {
+  text-align: center;
+  font-size: 14px;
+  color: #000000;
+  margin-bottom: 19px;
+  font-weight: bold;
+}
+
+.week-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  list-style: none;
+  column-gap: 5px;
+  justify-content: center;
+  padding: 20px 16px 8px 16px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.055);
+}
+
+.week-day {
+  text-align: center;
+  color: #c8c9cc;
+  font-size: 13px;
+}
+
+.days-container {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  place-items: center;
+  padding: 12px;
+}
+
+.date-label {
+  display: inline-block;
+  width: 120px;
+}
+
+.day {
+  width: 42px;
+  height: 42px;
+  background-color: #eceff2;
+  color: #aaacaf;
+  font-size: 15px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  user-select: none;
+  pointer-events: none;
+}
+
+.active-day {
+  color: #111111;
+  cursor: pointer;
+  pointer-events: visible;
+}
+
+.time-label {
+  font-size: 14px;
+  color: #6c70dc;
+  text-align: center;
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.055);
+}
+
+.time-body {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 15px;
+}
+
+.selected-day {
+  background-color: #6c70dc;
+  color: white;
+}
+
+.time-card {
+  display: flex;
+  flex-direction: column;
+  padding: 7px 22px;
+  background-color: #eceff2;
+  border-radius: 2px;
+  font-size: 14px;
+  color: #111111;
+  cursor: pointer;
 }

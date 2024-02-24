@@ -1,5 +1,7 @@
 const sidebarMenu = document.querySelector(".sidebar-menu");
 const contentHeader = document.querySelector(".content-header");
+const contentBody = document.querySelector(".content-body");
+const contentFooter = document.querySelector(".content-footer");
 
 const tabs = [
   { name: "staff", header: "Select staff" },
@@ -47,7 +49,7 @@ export const services = [
   }
 ];
 
-export const time = [
+export const times = [
   {
     "start_time": "09:00",
     "end_time": "09:30"
@@ -59,19 +61,27 @@ export const time = [
 ];
 
 let currentTabIndex = 0;
+let selectedStaff = null;
+let selectedService = null;
+let selectedDate = null;
+let selectedTime = null;
+let month = null;
+let year = null;
 
-tabs.forEach((tab, index) => {
-  const sidebarItem = document.createElement('div');
-  const sidebarItemNumber = document.createElement('span');
-  const sidebarItemName = document.createElement('span');
-  sidebarItem.classList.add('sidebar-menu-item');
-  sidebarItemNumber.classList.add('sidebar-menu-number');
-  sidebarItemNumber.innerText = index + 1;
-  sidebarItemName.innerText = tab.name;
-  sidebarItem.append(sidebarItemNumber);
-  sidebarItem.append(sidebarItemName);
-  sidebarMenu.appendChild(sidebarItem);
-});
+const sidebarMenuRender = () => {
+  sidebarMenu.innerHTML = "";
+  tabs.forEach((tab, index) => {
+    const sidebarItem = document.createElement('div');
+    const sidebarItemNumber = document.createElement('span');
+    const sidebarItemName = document.createElement('span');
+    sidebarItem.classList.add('sidebar-menu-item');
+    sidebarItemNumber.classList.add('sidebar-menu-number');
+    sidebarItemNumber.innerText = index + 1;
+    sidebarItemName.innerText = tab.name;
+    sidebarItem.append(sidebarItemNumber, sidebarItemName);
+    sidebarMenu.appendChild(sidebarItem);
+  });
+}
 
 const sidebarMenuUpdate = () => {
   const sidebarItems = [...document.querySelectorAll('.sidebar-menu-item')];
@@ -87,8 +97,262 @@ const sidebarMenuUpdate = () => {
 }
 
 const contentHeaderUpdate = () => {
-  contentHeader.firstElementChild.innerText = tabs[currentTabIndex].header
+  contentHeader.firstElementChild.innerText = tabs[currentTabIndex].header;
 }
 
-sidebarMenuUpdate();
-contentHeaderUpdate();
+const showWarningMessage = (message) => {
+  const warningMessage = document.querySelector('.warning-message');
+  warningMessage.children[1].innerText = message.toUpperCase();
+  warningMessage.style.visibility = 'visible';
+  setTimeout(() => {
+    warningMessage.style.visibility = 'hidden';
+  }, 2000);
+}
+
+const footerRender = () => {
+  contentFooter.innerHTML = "";
+  const backButton = document.createElement('button');
+  const nextButton = document.createElement('button');
+  const warningMessage = document.createElement('div');
+  warningMessage.classList.add('warning-message');
+  warningMessage.innerHTML += '<i class="fa-solid fa-circle-exclamation"></i> <span></span>';
+  warningMessage.style.visibility = 'hidden';
+  backButton.className = 'btn back-btn';
+  nextButton.className = 'btn next-btn';
+  backButton.innerText = 'back';
+  nextButton.innerText = currentTabIndex === 3 ? 'confirm booking' : 'next';
+  backButton.style.visibility = currentTabIndex === 0 ? 'hidden' : 'visible';
+  backButton.addEventListener('click', () => {
+    currentTabIndex -= 1;
+    uiRender();
+    const warningMessage = document.querySelector('.warning-message');
+    warningMessage.style.visibility = 'hidden';
+  });
+  nextButton.addEventListener('click', () => {
+    if (currentTabIndex < 3) {
+      if (currentTabIndex === 0) {
+        if (selectedStaff) { currentTabIndex += 1; uiRender(); }
+        else showWarningMessage('select staff');
+      }
+      else if (currentTabIndex === 1) {
+        if (selectedService) { currentTabIndex += 1; uiRender(); }
+        else showWarningMessage('select service');
+      }
+    }
+  });
+  contentFooter.append(backButton, warningMessage, nextButton);
+}
+
+const selectedStaffUpdate = () => {
+  const staffCards = [...document.querySelectorAll('.staff')];
+  staffCards.forEach(item => {
+    item.classList.remove('card-active');
+    if (Number(item.getAttribute('staff-id')) === selectedStaff) item.classList.add('card-active');
+  });
+}
+
+const staffContentRender = () => {
+  if (currentTabIndex === 0) {
+    contentBody.innerHTML = "";
+    contentBody.classList.remove('datetime-content');
+  }
+  staff.forEach((item, index) => {
+    const staffCard = document.createElement('div');
+    const cardRightDiv = document.createElement('div');
+    const img = document.createElement('img');
+    const textConatiner = document.createElement('div');
+    const cardTitle = document.createElement('h5');
+    const cardDescription = document.createElement('p');
+    staffCard.setAttribute('staff-id', item.id);
+    staffCard.className = 'staff card';
+    cardRightDiv.classList.add('card-right');
+    img.classList.add('card-img');
+    textConatiner.classList.add('text-container');
+    cardTitle.classList.add('card-title');
+    cardDescription.classList.add('card-description');
+    img.src = `../assets/images/staff-${index}.png`;
+    cardTitle.innerText = item.name;
+    cardDescription.innerText = item.desc;
+    textConatiner.append(cardTitle, cardDescription);
+    cardRightDiv.append(img, textConatiner);
+    staffCard.append(cardRightDiv);
+    staffCard.addEventListener('click', () => {
+      selectedStaff = item.id;
+      selectedStaffUpdate();
+      currentTabIndex += 1;
+      uiRender()
+    });
+    if (currentTabIndex === 0) contentBody.appendChild(staffCard);
+  });
+}
+
+const selectedServiceUpdate = () => {
+  const serviceCards = [...document.querySelectorAll('.service')];
+  serviceCards.forEach(item => {
+    item.classList.remove('card-active');
+    if (Number(item.getAttribute('service-id')) === selectedService) item.classList.add('card-active');
+  })
+}
+
+const servicesRender = () => {
+  if (currentTabIndex === 1) {
+    contentBody.innerHTML = "";
+    contentBody.classList.remove('datetime-content');
+  }
+  services.forEach((item, index) => {
+    const serviceCard = document.createElement('div');
+    const cardRightDiv = document.createElement('div');
+    const priceDiv = document.createElement('div');
+    const img = document.createElement('img');
+    const textConatiner = document.createElement('div');
+    const cardTitle = document.createElement('h5');
+    const cardDescription = document.createElement('p');
+    serviceCard.setAttribute('service-id', item.id);
+    serviceCard.className = 'service card';
+    cardRightDiv.classList.add('card-right');
+    priceDiv.classList.add('price');
+    img.classList.add('card-img');
+    textConatiner.classList.add('text-container');
+    cardTitle.classList.add('card-title');
+    cardDescription.classList.add('card-description');
+    img.src = `../assets/images/service-${index}.png`;
+    cardTitle.innerText = item.name;
+    cardDescription.innerText = item.duration;
+    textConatiner.append(cardTitle, cardDescription);
+    priceDiv.innerText = item.price + '$';
+    cardRightDiv.append(img, textConatiner);
+    serviceCard.append(cardRightDiv, priceDiv);
+    serviceCard.addEventListener('click', () => {
+      selectedService = item.id;
+      selectedServiceUpdate();
+      currentTabIndex += 1;
+      uiRender();
+    });
+    if (currentTabIndex === 1) contentBody.appendChild(serviceCard);
+  })
+}
+
+const dateTimeRender = () => {
+  const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+  const weekDayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const isLeapYear = (year) => {
+    return (year % 4 === 0 && year % 100 !== 0 && year % 400 !== 0) || (year % 100 === 0 && year % 400 === 0)
+  };
+  const getFebDays = (year) => {
+    return isLeapYear(year) ? 29 : 28
+  };
+  const daysOfMonth = [31, getFebDays(year), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (currentTabIndex === 2) {
+    contentBody.innerHTML = "";
+    contentBody.classList.add('datetime-content');
+  }
+  let currentDate = new Date();
+  if (month === null) month = currentDate.getMonth();
+  if (year === null) year = currentDate.getFullYear();
+  const monthStartDay = new Date(year + "-" + (month + 1) + "-01").getDay();
+  const monthName = monthNames[month];
+  const dateDiv = document.createElement('div');
+  const timeDiv = document.createElement('div');
+  const dateHeader = document.createElement('div');
+  const timeHeader = document.createElement('div');
+  const dateLabel = document.createElement('span');
+  const timeLabel = document.createElement('div');
+  const weekDays = document.createElement('div');
+  const dateSelector = document.createElement('div');
+  const timeSelector = document.createElement('div');
+  const daysContainer = document.createElement('div');
+  const datePrevButton = document.createElement('button');
+  const dateNextButton = document.createElement('button');
+  const timeBody = document.createElement('div');
+  timeLabel.classList.add('time-label');
+  dateLabel.classList.add('date-label');
+  dateDiv.classList.add('date');
+  timeDiv.classList.add('time');
+  dateHeader.classList.add('date-header');
+  timeHeader.classList.add('time-header');
+  timeBody.classList.add('time-body');
+  dateSelector.classList.add('date-selector');
+  timeSelector.classList.add('time-selector');
+  daysContainer.classList.add('days-container');
+  weekDays.classList.add('week-days')
+  datePrevButton.className = 'date-btn';
+  dateNextButton.className = 'date-btn';
+  datePrevButton.innerHTML = `<i class="fa-solid fa-angle-left"></i>`;
+  dateNextButton.innerHTML = `<i class="fa-solid fa-angle-right"></i>`;
+  datePrevButton.addEventListener('click', () => {
+    month -= 1;
+    if (month === -1) {
+      month = 11;
+      year -= 1;
+    }
+    uiRender();
+  });
+  dateNextButton.addEventListener('click', () => {
+    month += 1;
+    if (month === 12) {
+      month = 0;
+      year += 1;
+    }
+    uiRender();
+  });
+  timeLabel.innerText = selectedDate ? selectedDate : 'Select Date';
+  dateLabel.innerText = `${monthName} ${year}`;
+  dateHeader.append(datePrevButton, dateLabel, dateNextButton);
+  weekDayNames.forEach(day => {
+    const span = document.createElement('span');
+    span.classList.add('week-day');
+    span.innerText = day;
+    weekDays.appendChild(span);
+  });
+  for (let i = 0; i < monthStartDay - 1; i++) {
+    const span = document.createElement('span');
+    daysContainer.append(span);
+  }
+  for (let i = 1; i <= daysOfMonth[month]; i++) {
+    const date = `${year}-${month < 10 ? '0' + (month + 1) : (month + 1)}-${i}`;
+    const span = document.createElement('span');
+    span.classList.add('day');
+    if (year === currentDate.getFullYear() && month === currentDate.getMonth()) {
+      if (i - currentDate.getDate() < 3 && i - currentDate.getDate() >= 0) {
+        span.classList.add('active-day');
+        if (date === selectedDate) span.classList.add('selected-day');
+        span.addEventListener('click', () => {
+          span.classList.add('selected-day');
+          selectedDate = date;
+          uiRender();
+        })
+      }
+    }
+    span.innerText = i;
+    daysContainer.append(span);
+  }
+  dateSelector.append(weekDays, daysContainer);
+  timeHeader.innerText = 'Time';
+  times.forEach(time => {
+    const timeCard = document.createElement('div');
+    timeCard.classList.add('time-card');
+    timeCard.innerHTML = `<span>${time.start_time}</span><span>${time.end_time}</span>`;
+    if (selectedDate) timeBody.append(timeCard);
+  });
+  timeSelector.append(timeLabel, timeBody);
+  if (currentTabIndex === 2) {
+    dateDiv.append(dateHeader, dateSelector);
+    timeDiv.append(timeHeader, timeSelector);
+    contentBody.append(dateDiv, timeDiv);
+  }
+}
+
+const uiRender = () => {
+  sidebarMenuRender();
+  sidebarMenuUpdate();
+  contentHeaderUpdate();
+  staffContentRender();
+  selectedStaffUpdate();
+  servicesRender();
+  selectedServiceUpdate();
+  dateTimeRender();
+  footerRender();
+}
+
+uiRender();
